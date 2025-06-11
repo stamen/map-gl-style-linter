@@ -13,18 +13,38 @@ This tool takes the same inputs and creates compatible outputs to the style spec
 
 ## Usage
 
+### From the command line
+
 1.  Install.
 2.  Execute on one or more styles:
     ```bash
     map-gl-style-lint styles/*.json
     ```
 
-### Flags
+#### Flags
 
 By default, the linter uses Mapbox GL's style spec to validate a style. If you are using Maplibre GL, set the `--renderer` flag to `maplibre-gl` as shown below:
 
 ```bash
 map-gl-style-lint styles/*.json --renderer=maplibre-gl
+```
+
+### As a module
+
+```js
+const { lint } = require('map-gl-style-linter');
+
+const errors = lint(styleJson);
+```
+
+#### Options
+
+As above, the default spec used is Mapbox GL. To use Maplibre GL from the module:
+
+```js
+const { lint } = require('map-gl-style-linter');
+
+const errors = lint(styleJson, { renderer: 'maplibre-gl' });
 ```
 
 ## Development
