@@ -74,7 +74,10 @@ function $43be0d73ed34991b$var$_arrayLikeToArray(arr, len) {
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
     return arr2;
 }
-var $43be0d73ed34991b$var$_default = function _default(style, options) {
+var $43be0d73ed34991b$var$_default = function _default(style) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+        renderer: "mapbox-gl"
+    };
     return [].concat($43be0d73ed34991b$var$_toConsumableArray((0, $480Cv.formattedStyleSpecValidate)(style, options)), $43be0d73ed34991b$var$_toConsumableArray((0, $5pJKI.validateLayers)(style, options)));
 };
 module.exports["default"] = $43be0d73ed34991b$var$_default;
@@ -146,7 +149,6 @@ var $301863eb3379caee$var$formattedStyleSpecValidate = function formattedStyleSp
     var renderer = options.renderer;
     var layers = style.layers;
     var validationErrors = renderer === "maplibre-gl" ? (0, $5OpyM$validateStyleMin)(style) : (0, $5OpyM$validate)(style);
-    console.log(validationErrors);
     var formattedErrors = validationErrors.map(function(e) {
         var message = e.message;
         var matches = message.match(/layers\[\d+\]/g);

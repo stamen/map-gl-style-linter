@@ -74,7 +74,10 @@ function $97c29e6aac54c436$var$_arrayLikeToArray(arr, len) {
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
     return arr2;
 }
-var $97c29e6aac54c436$var$_default = function _default(style, options) {
+var $97c29e6aac54c436$var$_default = function _default(style) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+        renderer: "mapbox-gl"
+    };
     return [].concat($97c29e6aac54c436$var$_toConsumableArray((0, $hC95l.formattedStyleSpecValidate)(style, options)), $97c29e6aac54c436$var$_toConsumableArray((0, $a3us0.validateLayers)(style, options)));
 };
 module.exports["default"] = $97c29e6aac54c436$var$_default;
@@ -146,7 +149,6 @@ var $cd2d086a0cac1160$var$formattedStyleSpecValidate = function formattedStyleSp
     var renderer = options.renderer;
     var layers = style.layers;
     var validationErrors = renderer === "maplibre-gl" ? (0, $gXNCa$maplibremaplibreglstylespec.validateStyleMin)(style) : (0, $gXNCa$mapboxmapboxglstylespec.validate)(style);
-    console.log(validationErrors);
     var formattedErrors = validationErrors.map(function(e) {
         var message = e.message;
         var matches = message.match(/layers\[\d+\]/g);

@@ -10,8 +10,6 @@ const formattedStyleSpecValidate = (style, options) => {
       ? validateMaplibre(style)
       : validateMapbox(style);
 
-  console.log(validationErrors);
-
   const formattedErrors = validationErrors.map(e => {
     const { message } = e;
     const matches = message.match(/layers\[\d+\]/g);
