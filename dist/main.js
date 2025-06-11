@@ -146,6 +146,7 @@ var $cd2d086a0cac1160$var$formattedStyleSpecValidate = function formattedStyleSp
     var renderer = options.renderer;
     var layers = style.layers;
     var validationErrors = renderer === "maplibre-gl" ? (0, $gXNCa$maplibremaplibreglstylespec.validateStyleMin)(style) : (0, $gXNCa$mapboxmapboxglstylespec.validate)(style);
+    console.log(validationErrors);
     var formattedErrors = validationErrors.map(function(e) {
         var message = e.message;
         var matches = message.match(/layers\[\d+\]/g);

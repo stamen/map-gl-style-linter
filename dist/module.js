@@ -146,6 +146,7 @@ var $301863eb3379caee$var$formattedStyleSpecValidate = function formattedStyleSp
     var renderer = options.renderer;
     var layers = style.layers;
     var validationErrors = renderer === "maplibre-gl" ? (0, $5OpyM$validateStyleMin)(style) : (0, $5OpyM$validate)(style);
+    console.log(validationErrors);
     var formattedErrors = validationErrors.map(function(e) {
         var message = e.message;
         var matches = message.match(/layers\[\d+\]/g);
