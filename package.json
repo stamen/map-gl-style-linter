@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@mapbox/jsonlint-lines-primitives": "^2.0.2",
-    "@mapbox/mapbox-gl-style-spec": "^13.28.0"
+    "@mapbox/mapbox-gl-style-spec": "^14.12.0",
+    "@maplibre/maplibre-gl-style-spec": "^23.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
@@ -30,6 +31,6 @@
     "parcel": "2.6.0"
   },
   "bin": {
-    "mapbox-gl-style-lint": "bin/mapbox-gl-style-lint"
+    "map-gl-style-lint": "bin/map-gl-style-lint"
   }
 }
