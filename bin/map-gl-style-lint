@@ -11,7 +11,7 @@ const argv = yargs(hideBin(process.argv))
   .option('renderer', {
     alias: 'renderer',
     describe: 'Renderer to use',
-    type: 'string'
+    choices: ['maplibre-gl', 'mapbox-gl']
   })
   .example(
     `$0
