@@ -1,4 +1,11 @@
-import { latest, ValidationError } from '@mapbox/mapbox-gl-style-spec';
+import {
+  latest as mapboxLatest,
+  ValidationError as MapboxValidationError
+} from '@mapbox/mapbox-gl-style-spec';
+import {
+  latest as maplibreLatest,
+  ValidationError as MaplibreValidationError
+} from '@maplibre/maplibre-gl-style-spec';
 
 /**
  * getPropertyIds
@@ -6,15 +13,15 @@ import { latest, ValidationError } from '@mapbox/mapbox-gl-style-spec';
  * @param {string} type - `paint` or `layout`
  * @returns {string[]} - property ids for the given type
  */
-const getPropertyIds = type => {
+const getPropertyIds = (type, options) => {
+  const { renderer } = options;
+  const latest = renderer === 'maplibre-gl' ? maplibreLatest : mapboxLatest;
+
   let propertyIds = latest[type]
     .map(layerType => Object.keys(latest[layerType]))
     .flat(1);
   return Array.from(new Set(propertyIds));
 };
-
-const paintProperties = getPropertyIds('paint');
-const layoutProperties = getPropertyIds('layout');
 
 /**
  * validateMisplacedProperties
@@ -24,7 +31,14 @@ const layoutProperties = getPropertyIds('layout');
  * @param {string} type - `paint` or `layout`
  * @returns {ValidationError[]} - an error for each id found, if any
  */
-const validateMisplacedProperties = (layer, ids, type) => {
+const validateMisplacedProperties = (layer, ids, type, options) => {
+  const { renderer } = options;
+
+  const ValidationError =
+    renderer === 'maplibre-gl'
+      ? MaplibreValidationError
+      : MapboxValidationError;
+
   return Object.keys(layer)
     .filter(key => ids.includes(key))
     .map(
@@ -37,22 +51,29 @@ const validateMisplacedProperties = (layer, ids, type) => {
     );
 };
 
-const validateMisplacedPaintProperties = layer => {
-  return validateMisplacedProperties(layer, paintProperties, 'paint');
+const validateMisplacedPaintProperties = (layer, options) => {
+  const paintProperties = getPropertyIds('paint', options);
+  return validateMisplacedProperties(layer, paintProperties, 'paint', options);
 };
 
-const validateMisplacedLayoutProperties = layer => {
-  return validateMisplacedProperties(layer, layoutProperties, 'layout');
+const validateMisplacedLayoutProperties = (layer, options) => {
+  const layoutProperties = getPropertyIds('layout', options);
+  return validateMisplacedProperties(
+    layer,
+    layoutProperties,
+    'layout',
+    options
+  );
 };
 
-export const validateLayer = layer => {
+export const validateLayer = (layer, options) => {
   return [
-    ...validateMisplacedLayoutProperties(layer),
-    ...validateMisplacedPaintProperties(layer)
+    ...validateMisplacedLayoutProperties(layer, options),
+    ...validateMisplacedPaintProperties(layer, options)
   ];
 };
 
-export const validateLayers = style => {
+export const validateLayers = (style, options) => {
   if (!style.layers) return [];
-  return style.layers.map(validateLayer).flat(Infinity);
+  return style.layers.map(l => validateLayer(l, options)).flat(Infinity);
 };

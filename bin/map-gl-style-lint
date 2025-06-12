@@ -2,11 +2,26 @@
 
 const fs = require('fs');
 const jsonlint = require('@mapbox/jsonlint-lines-primitives');
-
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
 const { lint } = require('../dist/main');
 
+const argv = yargs(hideBin(process.argv))
+  .usage('Usage: $0')
+  .option('renderer', {
+    alias: 'renderer',
+    describe: 'Renderer to use',
+    choices: ['maplibre-gl', 'mapbox-gl']
+  })
+  .example(
+    `$0
+\t--renderer=maplibre-gl`
+  )
+  .parse();
+
 const parseArguments = argv => {
-  const args = argv.slice(2);
+  const { _: args, renderer = 'mapbox-gl' } = argv;
+
   const filepaths = [];
 
   args.forEach(v => {
@@ -20,14 +35,14 @@ Usage: ${process.argv[1]} files...`);
     process.exit(1);
   }
 
-  return { filepaths };
+  return { filepaths, renderer };
 };
 
 const getErrorOutput = (file, error) => {
   return `${file}:${error.line}: ${error.message}`;
 };
 
-const { filepaths } = parseArguments(process.argv);
+const { filepaths, renderer } = parseArguments(argv);
 
 let errors = [];
 
@@ -43,7 +58,7 @@ filepaths.map(file => {
   // Use jsonlint to get line numbers
   style = jsonlint.parse(style);
 
-  let styleErrors = lint(style);
+  let styleErrors = lint(style, { renderer });
 
   if (styleErrors) {
     styleErrors = styleErrors.map(e => getErrorOutput(file, e));

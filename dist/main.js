@@ -1,4 +1,5 @@
 var $gXNCa$mapboxmapboxglstylespec = require("@mapbox/mapbox-gl-style-spec");
+var $gXNCa$maplibremaplibreglstylespec = require("@maplibre/maplibre-gl-style-spec");
 
 var $parcel$global =
 typeof globalThis !== 'undefined'
@@ -74,7 +75,10 @@ function $97c29e6aac54c436$var$_arrayLikeToArray(arr, len) {
     return arr2;
 }
 var $97c29e6aac54c436$var$_default = function _default(style) {
-    return [].concat($97c29e6aac54c436$var$_toConsumableArray((0, $hC95l.formattedStyleSpecValidate)(style)), $97c29e6aac54c436$var$_toConsumableArray((0, $a3us0.validateLayers)(style)));
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+        renderer: "mapbox-gl"
+    };
+    return [].concat($97c29e6aac54c436$var$_toConsumableArray((0, $hC95l.formattedStyleSpecValidate)(style, options)), $97c29e6aac54c436$var$_toConsumableArray((0, $a3us0.validateLayers)(style, options)));
 };
 module.exports["default"] = $97c29e6aac54c436$var$_default;
 
@@ -85,6 +89,7 @@ Object.defineProperty(module.exports, "__esModule", {
     value: true
 });
 module.exports.formattedStyleSpecValidate = void 0;
+
 
 function $cd2d086a0cac1160$var$_typeof(obj1) {
     "@babel/helpers - typeof";
@@ -140,9 +145,10 @@ function $cd2d086a0cac1160$var$_toPrimitive(input, hint) {
     }
     return (hint === "string" ? String : Number)(input);
 }
-var $cd2d086a0cac1160$var$formattedStyleSpecValidate = function formattedStyleSpecValidate(style) {
+var $cd2d086a0cac1160$var$formattedStyleSpecValidate = function formattedStyleSpecValidate(style, options) {
+    var renderer = options.renderer;
     var layers = style.layers;
-    var validationErrors = (0, $gXNCa$mapboxmapboxglstylespec.validate)(style);
+    var validationErrors = renderer === "maplibre-gl" ? (0, $gXNCa$maplibremaplibreglstylespec.validateStyleMin)(style) : (0, $gXNCa$mapboxmapboxglstylespec.validate)(style);
     var formattedErrors = validationErrors.map(function(e) {
         var message = e.message;
         var matches = message.match(/layers\[\d+\]/g);
@@ -169,6 +175,7 @@ Object.defineProperty(module.exports, "__esModule", {
     value: true
 });
 module.exports.validateLayers = module.exports.validateLayer = void 0;
+
 
 function $01e3a45b386143e7$var$_toConsumableArray(arr) {
     return $01e3a45b386143e7$var$_arrayWithoutHoles(arr) || $01e3a45b386143e7$var$_iterableToArray(arr) || $01e3a45b386143e7$var$_unsupportedIterableToArray(arr) || $01e3a45b386143e7$var$_nonIterableSpread();
@@ -200,14 +207,14 @@ function $01e3a45b386143e7$var$_arrayLikeToArray(arr, len) {
  * Get property ids for either `paint` or `layout` properties
  * @param {string} type - `paint` or `layout`
  * @returns {string[]} - property ids for the given type
- */ var $01e3a45b386143e7$var$getPropertyIds = function getPropertyIds(type) {
-    var propertyIds = $gXNCa$mapboxmapboxglstylespec.latest[type].map(function(layerType) {
-        return Object.keys($gXNCa$mapboxmapboxglstylespec.latest[layerType]);
+ */ var $01e3a45b386143e7$var$getPropertyIds = function getPropertyIds(type, options) {
+    var renderer = options.renderer;
+    var latest = renderer === "maplibre-gl" ? $gXNCa$maplibremaplibreglstylespec.latest : $gXNCa$mapboxmapboxglstylespec.latest;
+    var propertyIds = latest[type].map(function(layerType) {
+        return Object.keys(latest[layerType]);
     }).flat(1);
     return Array.from(new Set(propertyIds));
 };
-var $01e3a45b386143e7$var$paintProperties = $01e3a45b386143e7$var$getPropertyIds("paint");
-var $01e3a45b386143e7$var$layoutProperties = $01e3a45b386143e7$var$getPropertyIds("layout");
 /**
  * validateMisplacedProperties
  * Find property ids at the top level of a layer that should not be there
@@ -215,26 +222,32 @@ var $01e3a45b386143e7$var$layoutProperties = $01e3a45b386143e7$var$getPropertyId
  * @param {string[]} ids - property ids to look for
  * @param {string} type - `paint` or `layout`
  * @returns {ValidationError[]} - an error for each id found, if any
- */ var $01e3a45b386143e7$var$validateMisplacedProperties = function validateMisplacedProperties(layer, ids, type) {
+ */ var $01e3a45b386143e7$var$validateMisplacedProperties = function validateMisplacedProperties(layer, ids, type, options) {
+    var renderer = options.renderer;
+    var ValidationError = renderer === "maplibre-gl" ? $gXNCa$maplibremaplibreglstylespec.ValidationError : $gXNCa$mapboxmapboxglstylespec.ValidationError;
     return Object.keys(layer).filter(function(key) {
         return ids.includes(key);
     }).map(function(key) {
-        return new $gXNCa$mapboxmapboxglstylespec.ValidationError(layer.id, layer[key], "contains '".concat(key, "' at the top level, but it should be in ").concat(type));
+        return new ValidationError(layer.id, layer[key], "contains '".concat(key, "' at the top level, but it should be in ").concat(type));
     });
 };
-var $01e3a45b386143e7$var$validateMisplacedPaintProperties = function validateMisplacedPaintProperties(layer) {
-    return $01e3a45b386143e7$var$validateMisplacedProperties(layer, $01e3a45b386143e7$var$paintProperties, "paint");
+var $01e3a45b386143e7$var$validateMisplacedPaintProperties = function validateMisplacedPaintProperties(layer, options) {
+    var paintProperties = $01e3a45b386143e7$var$getPropertyIds("paint", options);
+    return $01e3a45b386143e7$var$validateMisplacedProperties(layer, paintProperties, "paint", options);
 };
-var $01e3a45b386143e7$var$validateMisplacedLayoutProperties = function validateMisplacedLayoutProperties(layer) {
-    return $01e3a45b386143e7$var$validateMisplacedProperties(layer, $01e3a45b386143e7$var$layoutProperties, "layout");
+var $01e3a45b386143e7$var$validateMisplacedLayoutProperties = function validateMisplacedLayoutProperties(layer, options) {
+    var layoutProperties = $01e3a45b386143e7$var$getPropertyIds("layout", options);
+    return $01e3a45b386143e7$var$validateMisplacedProperties(layer, layoutProperties, "layout", options);
 };
-var $01e3a45b386143e7$var$validateLayer = function validateLayer(layer) {
-    return [].concat($01e3a45b386143e7$var$_toConsumableArray($01e3a45b386143e7$var$validateMisplacedLayoutProperties(layer)), $01e3a45b386143e7$var$_toConsumableArray($01e3a45b386143e7$var$validateMisplacedPaintProperties(layer)));
+var $01e3a45b386143e7$var$validateLayer = function validateLayer(layer, options) {
+    return [].concat($01e3a45b386143e7$var$_toConsumableArray($01e3a45b386143e7$var$validateMisplacedLayoutProperties(layer, options)), $01e3a45b386143e7$var$_toConsumableArray($01e3a45b386143e7$var$validateMisplacedPaintProperties(layer, options)));
 };
 module.exports.validateLayer = $01e3a45b386143e7$var$validateLayer;
-var $01e3a45b386143e7$var$validateLayers = function validateLayers(style) {
+var $01e3a45b386143e7$var$validateLayers = function validateLayers(style, options) {
     if (!style.layers) return [];
-    return style.layers.map($01e3a45b386143e7$var$validateLayer).flat(Infinity);
+    return style.layers.map(function(l) {
+        return $01e3a45b386143e7$var$validateLayer(l, options);
+    }).flat(Infinity);
 };
 module.exports.validateLayers = $01e3a45b386143e7$var$validateLayers;
 

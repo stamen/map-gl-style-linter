@@ -1,8 +1,15 @@
-import { validate } from '@mapbox/mapbox-gl-style-spec';
+import { validate as validateMapbox } from '@mapbox/mapbox-gl-style-spec';
+import { validateStyleMin as validateMaplibre } from '@maplibre/maplibre-gl-style-spec';
 
-const formattedStyleSpecValidate = style => {
+const formattedStyleSpecValidate = (style, options) => {
+  const { renderer } = options;
   const { layers } = style;
-  const validationErrors = validate(style);
+
+  const validationErrors =
+    renderer === 'maplibre-gl'
+      ? validateMaplibre(style)
+      : validateMapbox(style);
+
   const formattedErrors = validationErrors.map(e => {
     const { message } = e;
     const matches = message.match(/layers\[\d+\]/g);
